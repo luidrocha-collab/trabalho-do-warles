@@ -1,0 +1,130 @@
+import os
+
+class SistemaEscolar:
+    def __init__(self):
+        self.arquivo = "banco.txt"
+
+    
+    # UTIL
+    
+    def ler_dados(self):
+        if not os.path.exists(self.arquivo):
+            return []
+        with open(self.arquivo, "r", encoding="utf-8") as f:
+            return [linha.strip().split("|") for linha in f.readlines()]
+
+    def salvar(self, linha):
+        with open(self.arquivo, "a", encoding="utf-8") as f:
+            f.write("|".join(linha) + "\n")
+
+    def gerar_id(self, tipo):
+        dados = self.ler_dados()
+        ids = [int(d[1]) for d in dados if d[0] == tipo]
+        return max(ids) + 1 if ids else 1
+
+    
+    # CADASTROS
+    
+    def cadastrar_aluno(self):
+        nome = input("Nome: ")
+        turma = input("Turma: ")
+
+        self.salvar(["ALUNO", str(self.gerar_id("ALUNO")), nome, turma])
+        print("Aluno cadastrado!")
+
+    def cadastrar_professor(self):
+        nome = input("Nome: ")
+        area = input("Área: ")
+
+        self.salvar(["PROFESSOR", str(self.gerar_id("PROFESSOR")), nome, area])
+        print("Professor cadastrado!")
+
+    def cadastrar_disciplina(self):
+        nome = input("Nome: ")
+        carga = input("Carga Horária: ")
+        prof = input("ID do professor: ")
+
+        self.salvar(["DISCIPLINA", str(self.gerar_id("DISCIPLINA")), nome, carga, prof])
+        print("Disciplina cadastrada!")
+
+   
+    # EXIBIÇÃO
+    
+    def mostrar(self):
+        dados = self.ler_dados()
+
+        print("\n===== ALUNOS =====")
+        print(f"{'ID':<5}{'NOME':<20}{'TURMA':<10}")
+        print("-" * 35)
+        for d in dados:
+            if d[0] == "ALUNO":
+                print(f"{d[1]:<5}{d[2]:<20}{d[3]:<10}")
+
+        print("\n===== PROFESSORES =====")
+        print(f"{'ID':<5}{'NOME':<20}{'ÁREA':<15}")
+        print("-" * 40)
+        for d in dados:
+            if d[0] == "PROFESSOR":
+                print(f"{d[1]:<5}{d[2]:<20}{d[3]:<15}")
+
+        print("\n===== DISCIPLINAS =====")
+        print(f"{'ID':<5}{'NOME':<20}{'CARGA':<10}{'PROF':<5}")
+        print("-" * 45)
+        for d in dados:
+            if d[0] == "DISCIPLINA":
+                print(f"{d[1]:<5}{d[2]:<20}{d[3]:<10}{d[4]:<5}")
+
+
+
+# MENU DO BANCO
+
+def menu_banco(sistema):
+    while True:
+        print("\n===== BANCO DE DADOS =====")
+        print("1 - Cadastrar aluno")
+        print("2 - Cadastrar professor")
+        print("3 - Cadastrar disciplina")
+        print("4 - Ver dados")
+        print("0 - Voltar")
+
+        op = input("Escolha: ")
+
+        if op == "1":
+            sistema.cadastrar_aluno()
+        elif op == "2":
+            sistema.cadastrar_professor()
+        elif op == "3":
+            sistema.cadastrar_disciplina()
+        elif op == "4":
+            sistema.mostrar()
+        elif op == "0":
+            break
+        else:
+            print("Opção inválida!")
+
+
+
+# MENU PRINCIPAL
+
+def menu_principal():
+    sistema = SistemaEscolar()
+
+    while True:
+        print("\n===== MENU PRINCIPAL =====")
+        print("1 - Entrar no Sistema Escolar")
+        print("0 - Sair")
+
+        op = input("Escolha: ")
+
+        if op == "1":
+            menu_banco(sistema)
+        elif op == "0":
+            break
+        else:
+            print("Opção inválida!")
+
+
+
+# INICIAR
+
+menu_principal()
